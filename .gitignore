@@ -1,0 +1,12 @@
+# Python virtual environment (large and recreated from requirements.txt)
+venv/
+
+# Secret settings like GEMINI_API_KEY (NEVER share or upload this file)
+.env
+
+# Temporary helper files Python generates automatically when running code
+__pycache__/
+*.pyc
+
+# Local runtime data (uploaded documents, vector database, document registry)
+data/

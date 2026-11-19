@@ -1,0 +1,51 @@
+# DocMind — Long-Term Project Memory
+
+## 1. Goal & Scope
+- Project: DocMind — local RAG (Retrieval-Augmented Generation) web app using Flask, LangChain, local Hugging Face embeddings, Chroma, and Gemini API.
+- Target user: Single local user. No deployment, no auth, no SQL DB, no frontend frameworks.
+- Must NOT do: Hallucinate outside retrieved context, expose GEMINI_API_KEY, or add out-of-scope features (auth, SQL, Docker, deployment, streaming, agents/tools, OCR, Celery, automated tests, React/Angular).
+- Privacy rule: Gemini Free Tier prompts and sent chunks may be used by Google to improve products — do NOT upload private/sensitive documents.
+
+## 2. Tiered Features (all kept; build strictly in tier order)
+- Tier 1 (Core): Upload PDF/TXT/MD (allowlist + size limit), parse & chunk, local HF embeddings, persistent Chroma with chunk metadata (doc_id, filename, page, chunk_index), grounded Q&A across all docs with "I couldn't find that in your documents" fallback, citations (filename, page, chunk preview), persistence across restarts.
+- Tier 2 (Intermediate): Document library (list + chunk counts + full delete), per-session memory with standalone question rewriting, single-doc scope filter, per-document summary, relevance-score guard (skip Gemini below threshold), UI loading/clear/friendly error & 429 rate-limit handling.
+- Tier 3 (Stretch — only if requested after Tiers 1–2): Settings panel (top-k, chunk size, temperature), Markdown chat export, duplicate content detection, /health route, local request logging.
+
+## 3. Verified Environment & Pinned Core Stack
+- Python: 3.14.3 (Windows PowerShell venv)
+- Flask: 3.1.3
+- langchain-core: 1.8.3
+- langchain-google-genai: 4.5.1 (google-genai 3.6.1)
+- langchain-huggingface: 1.2.3 (sentence-transformers 5.7.0, transformers 5.23.0, torch 2.15.0)
+- langchain-chroma: 1.1.0 (chromadb 1.5.9)
+- langchain-text-splitters: 1.1.3
+- pypdf: 7.1.1
+- python-dotenv: 1.2.4
+
+## 4. Models & Quotas
+- Local Embeddings: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  (Apache 2.0, ungated, 50+ languages incl. EN/FR/AR, 384-dim, L2-normalized, CPU in-process, cached in ~/.cache/huggingface/hub)
+- Hosted LLM: gemini-3.5-flash-lite (Google AI Studio — Default Gemini Project, key: docmind-local, Free tier)
+- Verified Free-Tier Limits (project-scoped): 15 RPM | 250K TPM | 500 RPD
+
+## 5. Folder Structure
+docmind/
+  app.py, config.py, vector_store.py, document_service.py, rag_service.py
+  requirements.txt, .env, .gitignore, memory.txt, progress.txt
+  scripts/ (test_embeddings.py, test_gemini.py, test_rag_cli.py)
+  templates/index.html
+  static/ (style.css, app.js)
+  data/ (uploads/, chroma_db/, documents.json)
+
+## 6. Contracts & State Decisions
+- JSON Response Wrapper (all routes): { "success": true|false, "data": <payload|null>, "message": "<string>" }
+- Document ID: Generated UUID (doc_id) in documents.json and chunk metadata; original filename kept for display.
+- Duplicate filename upload: Reject with HTTP 409 Conflict ("already exists; delete it first").
+- Document deletion: Delete Chroma chunks by metadata filter (where={"doc_id": doc_id}), remove documents.json entry, delete raw file from data/uploads/.
+- Conversation memory (Tier 2): In-memory Python dict keyed by session_id (resets on Flask restart; documents persist on disk).
+- Multiple browser tabs (Tier 2): Independent per-tab session_id stored in browser sessionStorage.
+
+## 7. Working & Mentor Preferences
+- Step-by-step ("n" to continue), concise, no unrelated edits.
+- Real technical terms; parenthetical explanations only for concepts new to CV (Flask, RAG, LangChain, embeddings, Chroma, HF, Gemini).
+- Always explain how each feature fits into the grand scheme of the app.
