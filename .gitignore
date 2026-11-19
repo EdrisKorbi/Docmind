@@ -10,3 +10,5 @@ __pycache__/
 
 # Local runtime data (uploaded documents, vector database, document registry)
 data/
+
+memory.txt
