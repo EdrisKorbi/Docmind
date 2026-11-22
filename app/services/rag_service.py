@@ -4,6 +4,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 import app.config as config
 import app.storage.vector_store as vector_store
+from app.errors import LLMServiceError, map_gemini_error
 
 DEFAULT_TOP_K = 4
 DEFAULT_TEMPERATURE = 0.0
@@ -31,12 +32,29 @@ QA_PROMPT = ChatPromptTemplate.from_messages(
 
 def get_llm(temperature: float = DEFAULT_TEMPERATURE) -> ChatGoogleGenerativeAI:
     """Create a Gemini chat client, validating GEMINI_API_KEY only on LLM paths."""
-    api_key = config.require_gemini_api_key()
+    try:
+        api_key = config.require_gemini_api_key()
+    except ValueError as exc:
+        raise LLMServiceError(str(exc)) from exc
+
     return ChatGoogleGenerativeAI(
         model=config.GEMINI_MODEL,
         api_key=api_key,
         temperature=temperature,
     )
+
+
+def _invoke_llm(messages: list, temperature: float = DEFAULT_TEMPERATURE) -> str:
+    """Send formatted messages to Gemini and map known SDK errors to domain exceptions."""
+    llm = get_llm(temperature=temperature)
+    try:
+        response = llm.invoke(messages)
+    except Exception as exc:
+        mapped = map_gemini_error(exc)
+        if mapped is not None:
+            raise mapped from exc
+        raise
+    return response.text.strip()
 
 
 def format_context(chunks: list[Document]) -> str:
@@ -99,9 +117,7 @@ def ask_question(
         question=cleaned_question,
     )
 
-    llm = get_llm(temperature=temperature)
-    response = llm.invoke(messages)
-    answer = response.text.strip()
+    answer = _invoke_llm(messages, temperature=temperature)
 
     # Do not attach misleading citations if Gemini triggered the fallback
     is_fallback = FALLBACK_ANSWER.lower() in answer.lower()

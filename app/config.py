@@ -18,6 +18,19 @@ REGISTRY_PATH = DATA_DIR / "documents.json"
 EMBEDDING_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 GEMINI_MODEL = "gemini-3.5-flash-lite"
 
+# Comma-separated frontend origins allowed by CORS (defaults to local Vite dev URLs)
+_raw_origins = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173",
+)
+ALLOWED_ORIGINS = [
+    origin.strip() for origin in _raw_origins.split(",") if origin.strip()
+]
+
+# Upload size limit (10 MB cap enforced during chunked file reads)
+MAX_UPLOAD_SIZE_MB = 10
+MAX_UPLOAD_SIZE_BYTES = MAX_UPLOAD_SIZE_MB * 1024 * 1024
+
 # Secret API key read from environment (empty string if missing)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 

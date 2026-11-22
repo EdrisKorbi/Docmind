@@ -3,11 +3,15 @@ import json
 from pathlib import Path
 import uuid
 
+import re
+from typing import BinaryIO
+
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pypdf import PdfReader
 
 from app import config
+from app.errors import FileTooLargeError
 from app.storage import vector_store
 
 ALLOWED_EXTENSIONS = {".pdf", ".txt", ".md"}
@@ -119,3 +123,67 @@ def ingest_document(
     records.append(record)
     save_registry(records)
     return record
+
+UPLOAD_READ_CHUNK_SIZE = 64 * 1024  # Read uploads in 64 KB chunks
+UNSAFE_FILENAME_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+
+
+def sanitize_filename(raw_filename: str | None) -> str:
+    """Strip directory paths and OS-unsafe characters from a client-supplied filename."""
+    if not raw_filename:
+        return ""
+    # Normalize Windows backslashes so Path(...).name strips paths on any OS
+    base_name = Path(raw_filename.replace("\\", "/")).name.strip()
+    # Replace Windows-forbidden and control characters, then trim edge dots/spaces
+    return UNSAFE_FILENAME_CHARS.sub("_", base_name).strip(". ")
+
+
+def ingest_uploaded_file(file_obj: BinaryIO, raw_filename: str | None) -> dict:
+    """Validate, stream-save to data/uploads/, and ingest an uploaded file safely."""
+    safe_name = sanitize_filename(raw_filename)
+    if not safe_name:
+        raise ValueError("Uploaded file must have a valid filename.")
+
+    ext = Path(safe_name).suffix.lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValueError(f"Unsupported file type '{ext}'. Allowed: .pdf, .txt, .md")
+
+    # Reject duplicate display names before writing anything to disk
+    records = load_registry()
+    if any(r["filename"].lower() == safe_name.lower() for r in records):
+        raise FileExistsError(
+            f"A document named '{safe_name}' already exists. Delete it first."
+        )
+
+    config.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    # Use a server-generated filename on disk to eliminate path/encoding collisions
+    saved_path = config.UPLOAD_DIR / f"{uuid.uuid4().hex}{ext}"
+
+    total_bytes = 0
+    too_large = False
+
+    with saved_path.open("wb") as out_file:
+        while chunk := file_obj.read(UPLOAD_READ_CHUNK_SIZE):
+            total_bytes += len(chunk)
+            if total_bytes > config.MAX_UPLOAD_SIZE_BYTES:
+                too_large = True
+                break
+            out_file.write(chunk)
+
+    # Delete outside the 'with' block so the file handle is closed (required on Windows)
+    if too_large:
+        saved_path.unlink(missing_ok=True)
+        raise FileTooLargeError(
+            f"File exceeds the {config.MAX_UPLOAD_SIZE_MB} MB upload limit."
+        )
+
+    if total_bytes == 0:
+        saved_path.unlink(missing_ok=True)
+        raise ValueError("Uploaded file is empty.")
+
+    try:
+        return ingest_document(saved_path, original_filename=safe_name)
+    except Exception:
+        # Remove orphan file if parsing, chunking, or vector storage fails
+        saved_path.unlink(missing_ok=True)
+        raise
