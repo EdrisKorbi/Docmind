@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-label="DocMind banner">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4F46E5"/>
+      <stop offset="0.55" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="page" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#E0E7FF" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="320" rx="24" fill="url(#bg)"/>
+  <!-- soft decorative circles -->
+  <circle cx="1080" cy="40" r="140" fill="#FFFFFF" fill-opacity="0.07"/>
+  <circle cx="1140" cy="290" r="110" fill="#FFFFFF" fill-opacity="0.07"/>
+  <circle cx="60" cy="300" r="90" fill="#FFFFFF" fill-opacity="0.06"/>
+  <!-- document icon -->
+  <g transform="translate(110 72)">
+    <rect x="0" y="0" width="130" height="170" rx="14" fill="url(#page)"/>
+    <path d="M90 0 L130 40 H104 a14 14 0 0 1 -14 -14 Z" fill="#C7D2FE"/>
+    <rect x="22" y="62" width="86" height="9" rx="4.5" fill="#6366F1"/>
+    <rect x="22" y="84" width="70" height="9" rx="4.5" fill="#A5B4FC"/>
+    <rect x="22" y="106" width="80" height="9" rx="4.5" fill="#A5B4FC"/>
+    <rect x="22" y="128" width="50" height="9" rx="4.5" fill="#A5B4FC"/>
+    <!-- spark -->
+    <circle cx="128" cy="150" r="30" fill="#06B6D4"/>
+    <path d="M128 133 l5 12 12 5 -12 5 -5 12 -5 -12 -12 -5 12 -5 z" fill="#FFFFFF"/>
+  </g>
+  <!-- text -->
+  <text x="300" y="150" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="92" font-weight="800" fill="#FFFFFF" letter-spacing="-2">DocMind</text>
+  <text x="304" y="205" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="30" font-weight="400" fill="#E0E7FF">Chat with your documents. Every answer, cited.</text>
+  <text x="304" y="250" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" fill="#C7D2FE">FastAPI  ·  LangChain  ·  ChromaDB  ·  Hugging Face  ·  Gemini</text>
+</svg>
