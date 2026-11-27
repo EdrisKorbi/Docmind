@@ -11,7 +11,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pypdf import PdfReader
 
 from app import config
-from app.errors import FileTooLargeError
+from app.errors import DocumentNotFoundError, FileTooLargeError
 from app.storage import vector_store
 
 ALLOWED_EXTENSIONS = {".pdf", ".txt", ".md"}
@@ -187,3 +187,74 @@ def ingest_uploaded_file(file_obj: BinaryIO, raw_filename: str | None) -> dict:
         # Remove orphan file if parsing, chunking, or vector storage fails
         saved_path.unlink(missing_ok=True)
         raise
+
+def list_documents() -> list[dict]:
+    """Return all uploaded document records from data/documents.json."""
+    return load_registry()
+
+
+def get_document(doc_id: str) -> dict:
+    """Find one document record by doc_id or raise DocumentNotFoundError."""
+    for record in load_registry():
+        if record["doc_id"] == doc_id:
+            return record
+    raise DocumentNotFoundError(f"Document '{doc_id}' was not found.")
+
+
+def delete_document(doc_id: str) -> dict:
+    """Delete a document's Chroma chunks, registry entry, and uploaded file."""
+    records = load_registry()
+    target = next((r for r in records if r["doc_id"] == doc_id), None)
+    if target is None:
+        raise DocumentNotFoundError(f"Document '{doc_id}' was not found.")
+
+    # 1. Remove vector chunks from Chroma first to prevent ghost chunks
+    vs = vector_store.get_vector_store()
+    vs._collection.delete(where={"doc_id": doc_id})
+
+    # 2. Remove the document from documents.json
+    remaining = [r for r in records if r["doc_id"] != doc_id]
+    save_registry(remaining)
+
+    # 3. Remove the raw file only if it lives inside data/uploads/
+    raw_path = target.get("stored_path")
+    if raw_path:
+        stored_path = Path(raw_path).resolve()
+        upload_dir = config.UPLOAD_DIR.resolve()
+        if stored_path.is_relative_to(upload_dir):
+            stored_path.unlink(missing_ok=True)
+
+    return target
+
+def _chunk_sort_key(pair: tuple[object, object]) -> int:
+    """Extract a valid integer chunk_index from a (document, metadata) pair."""
+    _, meta = pair
+    if isinstance(meta, dict):
+        idx = meta.get("chunk_index")
+        if isinstance(idx, int) and not isinstance(idx, bool):
+            return idx
+    return 0
+
+
+def get_document_chunks(doc_id: str, max_chunks: int | None = None) -> list[str]:
+    """Fetch a document's text chunks from Chroma ordered by chunk_index."""
+    get_document(doc_id)
+
+    vs = vector_store.get_vector_store()
+    raw = vs._collection.get(
+        where={"doc_id": doc_id},
+        include=["documents", "metadatas"],
+    )
+
+    documents = raw.get("documents") or []
+    metadatas = raw.get("metadatas") or []
+
+    paired = list(zip(documents, metadatas))
+    paired.sort(key=_chunk_sort_key)
+
+    ordered_texts = [
+        text
+        for text, _ in (paired[:max_chunks] if max_chunks is not None else paired)
+        if isinstance(text, str) and text
+    ]
+    return ordered_texts

@@ -9,9 +9,13 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.routes.api import router as api_router
 from app.schemas.api_schemas import ApiResponse
 import app.config as config
-from app.errors import LLMQuotaExceededError, LLMServiceError
+from app.errors import DocumentNotFoundError, LLMQuotaExceededError, LLMServiceError
 
 # Standard logger for recording full error tracebacks in the server terminal
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s:     %(message)s",
+)
 logger = logging.getLogger("docmind")
 
 app = FastAPI(
@@ -65,6 +69,18 @@ async def validation_exception_handler(
         message=message,
     )
     return JSONResponse(status_code=422, content=payload.model_dump())
+
+@app.exception_handler(DocumentNotFoundError)
+async def document_not_found_handler(
+    request: Request, exc: DocumentNotFoundError
+) -> JSONResponse:
+    """Map missing document lookups to HTTP 404 in the standard ApiResponse envelope."""
+    payload = ApiResponse(
+        success=False,
+        data=None,
+        message=str(exc),
+    )
+    return JSONResponse(status_code=404, content=payload.model_dump())
 
 @app.exception_handler(LLMQuotaExceededError)
 async def llm_quota_exception_handler(

@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+
 # Resolve the project root directory (docmind/) regardless of where Python is invoked from
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,6 +31,9 @@ ALLOWED_ORIGINS = [
 # Upload size limit (10 MB cap enforced during chunked file reads)
 MAX_UPLOAD_SIZE_MB = 10
 MAX_UPLOAD_SIZE_BYTES = MAX_UPLOAD_SIZE_MB * 1024 * 1024
+
+# Minimum Chroma relevance score required before sending chunks to Gemini
+MIN_RELEVANCE_SCORE = float(os.getenv("MIN_RELEVANCE_SCORE", "0.30"))
 
 # Secret API key read from environment (empty string if missing)
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()

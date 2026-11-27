@@ -10,6 +10,9 @@ class DocMindError(Exception):
 class FileTooLargeError(DocMindError):
     """Raised when an uploaded file exceeds config.MAX_UPLOAD_SIZE_BYTES."""
 
+class DocumentNotFoundError(DocMindError):
+    """Raised when a requested doc_id does not exist in documents.json."""
+
 
 class LLMQuotaExceededError(DocMindError):
     """Raised when the hosted LLM rejects a request due to rate or quota limits."""
