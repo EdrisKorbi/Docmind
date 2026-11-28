@@ -1,0 +1,26 @@
+/* Round raised button; pressing it makes it look pushed in */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-raised-sm);
+    cursor: pointer;
+    /* Only shadow and color animate, on one small element, so it stays cheap */
+    transition:
+        box-shadow 0.2s ease,
+        color 0.2s ease;
+}
+
+.theme-toggle:hover {
+    color: var(--accent);
+}
+
+.theme-toggle:active {
+    box-shadow: var(--shadow-inset);
+}
