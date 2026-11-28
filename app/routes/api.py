@@ -51,6 +51,7 @@ def ask_question(payload: AskRequest) -> ApiResponse[AskData]:
         result = rag_service.ask_question(
             payload.question,
             doc_id=payload.doc_id,
+            session_id=payload.session_id,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
