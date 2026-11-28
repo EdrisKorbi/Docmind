@@ -8,7 +8,7 @@ type DocumentListProps = {
     documents: DocumentRecord[];
     isLoading: boolean;
     loadError: string | null;
-    onRetry: () => Promise<void>;
+    onRetry: () => void;
     onDelete: (docId: string) => Promise<void>;
     onSummarize: (record: DocumentRecord) => Promise<void>;
 };
@@ -45,7 +45,7 @@ export default function DocumentList({
                 <button
                     type="button"
                     className="document-list__retry"
-                    onClick={() => void onRetry()}
+                    onClick={onRetry}
                 >
                     Retry
                 </button>

@@ -9,7 +9,7 @@ type DocumentLibraryProps = {
     documents: DocumentRecord[];
     isLoading: boolean;
     loadError: string | null;
-    onRetry: () => Promise<void>;
+    onRetry: () => void;
     onUpload: (file: File) => Promise<unknown>;
     onDelete: (docId: string) => Promise<void>;
     onSummarize: (record: DocumentRecord) => Promise<void>;

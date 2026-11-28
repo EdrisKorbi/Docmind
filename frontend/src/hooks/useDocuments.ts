@@ -13,25 +13,46 @@ export function useDocuments() {
     const [isLoading, setIsLoading] = useState(true);
     // Message for a failed LIST load only; upload/delete errors go to the caller
     const [loadError, setLoadError] = useState<string | null>(null);
+    // Bumped by Retry to run the load effect again
+    const [reloadKey, setReloadKey] = useState(0);
 
-    // Fetches the list from the backend (GET /api/documents, no Gemini call)
-    const reload = useCallback(async () => {
+    // Loads the list (GET /api/documents, no Gemini call) on mount and on Retry
+    useEffect(() => {
+        // `reloadKey` is only a trigger; reading it makes the effect depend on it
+        void reloadKey;
+        // Set by the cleanup below, so a reply that arrives late is ignored
+        let ignore = false;
+
+        async function fetchList() {
+            try {
+                const list = await getDocuments();
+                if (!ignore) {
+                    setDocuments(list);
+                }
+            } catch (error) {
+                if (!ignore) {
+                    setLoadError(getErrorMessage(error));
+                }
+            } finally {
+                // Runs on success AND failure, so the loading state never gets stuck
+                if (!ignore) {
+                    setIsLoading(false);
+                }
+            }
+        }
+
+        void fetchList();
+        return () => {
+            ignore = true;
+        };
+    }, [reloadKey]);
+
+    // Used by the Retry button: show the loading state, then re-run the effect
+    const reload = useCallback(() => {
         setIsLoading(true);
         setLoadError(null);
-        try {
-            setDocuments(await getDocuments());
-        } catch (error) {
-            setLoadError(getErrorMessage(error));
-        } finally {
-            // Runs on success AND failure, so the loading state never gets stuck
-            setIsLoading(false);
-        }
+        setReloadKey((previous) => previous + 1);
     }, []);
-
-    // Load the list once when the hook first mounts
-    useEffect(() => {
-        void reload();
-    }, [reload]);
 
     // Uploads one file, then adds the returned record to the list.
     // Errors are NOT caught here: the component shows them to the user.
