@@ -1,0 +1,68 @@
+.chat-input {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-3);
+}
+
+/* A pressed-in well, like the other input surfaces */
+.chat-input__field {
+    flex: 1;
+    min-width: 0;
+    max-height: 160px;
+    padding: var(--space-2) var(--space-3);
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-inset);
+    font: inherit;
+    resize: none;
+    /* Grows with the text up to max-height, then scrolls. Browsers without
+     this property keep one row and scroll, which still works. */
+    field-sizing: content;
+}
+
+.chat-input__field::placeholder {
+    color: var(--text-muted);
+}
+
+/* The input well already shows focus through its shape; keep the ring for
+   keyboard users but draw it tight to the edge */
+.chat-input__field:focus-visible {
+    outline-offset: 0;
+}
+
+.chat-input__field:read-only {
+    cursor: progress;
+}
+
+/* Round raised button, same family as the theme toggle */
+.chat-input__send {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--accent);
+    box-shadow: var(--shadow-raised-sm);
+    cursor: pointer;
+    transition:
+        box-shadow 0.2s ease,
+        color 0.2s ease;
+}
+
+.chat-input__send:active {
+    box-shadow: var(--shadow-inset);
+}
+
+/* Nothing to send, or a reply is loading: pressed in and muted */
+.chat-input__send:disabled {
+    color: var(--text-muted);
+    box-shadow: var(--shadow-inset);
+    cursor: not-allowed;
+}

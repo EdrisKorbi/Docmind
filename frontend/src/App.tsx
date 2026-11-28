@@ -1,20 +1,18 @@
+import "./App.css";
+import ChatWorkspace from "./components/chat/ChatWorkspace";
 import ThemeToggle from "./components/common/ThemeToggle";
-import UploadZone from "./components/documents/UploadZone";
-import DocumentList from "./components/documents/DocumentList";
+import DocumentLibrary from "./components/documents/DocumentLibrary";
 import SummaryModal from "./components/documents/SummaryModal";
-
-import { useSummary } from "./hooks/useSummary";
 import { useDocuments } from "./hooks/useDocuments";
+import { useSummary } from "./hooks/useSummary";
 import { useTheme } from "./hooks/useTheme";
 
-// Temporary Step 4 screen: tests upload and the documents hook.
-// This file is replaced by the real layout in Steps 4-5.
 export default function App() {
-  // Each hook is called once here and its values are passed down
+  // Theme, documents, and summary state live here; the chat state lives in
+  // ChatWorkspace, because nothing outside the chat needs it
   const { theme, toggleTheme } = useTheme();
   const { documents, isLoading, loadError, reload, upload, remove } =
     useDocuments();
-
   const {
     summaryTarget,
     isSummarizing,
@@ -25,26 +23,27 @@ export default function App() {
   } = useSummary();
 
   return (
-    <main
-      style={{
-        padding: "var(--space-4)",
-        maxWidth: 420,
-        display: "flex",
-        flexDirection: "column",
-        gap: "var(--space-3)",
-      }}
-    >
-      <ThemeToggle theme={theme} onToggle={toggleTheme} />
-      <h1>DocMind</h1>
-      <UploadZone onUpload={upload} />
-      <DocumentList
-        documents={documents}
-        isLoading={isLoading}
-        loadError={loadError}
-        onRetry={reload}
-        onDelete={remove}
-        onSummarize={openSummary}
-      />
+    <div className="app">
+      <aside className="app__sidebar">
+        <header className="app__header">
+          <h1 className="app__title">DocMind</h1>
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
+        </header>
+        <DocumentLibrary
+          documents={documents}
+          isLoading={isLoading}
+          loadError={loadError}
+          onRetry={reload}
+          onUpload={upload}
+          onDelete={remove}
+          onSummarize={openSummary}
+        />
+      </aside>
+
+      <main className="app__main">
+        <ChatWorkspace documents={documents} />
+      </main>
+
       {/* Mounted only while a summary is open; mounting is what opens the dialog */}
       {summaryTarget !== null && (
         <SummaryModal
@@ -55,6 +54,6 @@ export default function App() {
           onClose={closeSummary}
         />
       )}
-    </main>
+    </div>
   );
 }

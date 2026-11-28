@@ -1,0 +1,36 @@
+.message {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    max-width: 85%;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    list-style: none;
+    overflow-wrap: anywhere;
+}
+
+/* Small label above each message; also tells screen readers who is speaking */
+.message__author {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* User: right side, pressed-in like an input field */
+.message--user {
+    align-self: flex-end;
+    box-shadow: var(--shadow-inset);
+}
+
+/* pre-wrap keeps the line breaks the user typed */
+.message__text {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+/* Assistant: left side, raised card */
+.message--assistant {
+    align-self: flex-start;
+    background: var(--surface);
+    box-shadow: var(--shadow-raised-sm);
+}

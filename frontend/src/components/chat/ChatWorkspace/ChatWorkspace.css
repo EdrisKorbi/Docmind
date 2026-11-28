@@ -1,0 +1,53 @@
+/* Fills the height its parent gives it. min-height: 0 lets the thread inside
+   shrink and scroll instead of stretching the page. */
+.chat-workspace {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.chat-workspace__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+}
+
+/* The selector takes the free space; the clear button keeps its size */
+.chat-workspace__header> :first-child {
+    flex: 1;
+}
+
+/* Round raised button, same family as the theme toggle and the send button */
+.chat-workspace__clear {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-raised-sm);
+    cursor: pointer;
+    transition:
+        box-shadow 0.2s ease,
+        color 0.2s ease;
+}
+
+.chat-workspace__clear:hover {
+    color: var(--accent);
+}
+
+.chat-workspace__clear:active {
+    box-shadow: var(--shadow-inset);
+}
+
+.chat-workspace__clear:disabled {
+    color: var(--text-muted);
+    box-shadow: var(--shadow-inset);
+    cursor: not-allowed;
+}

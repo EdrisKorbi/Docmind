@@ -1,0 +1,96 @@
+.citation-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+}
+
+/* Small raised pill; pressing it looks pushed in */
+.citation-list__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    align-self: flex-start;
+    padding: var(--space-1) var(--space-3);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text-muted);
+    box-shadow: var(--shadow-raised-sm);
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition:
+        box-shadow 0.2s ease,
+        color 0.2s ease;
+}
+
+.citation-list__toggle:hover {
+    color: var(--accent);
+}
+
+.citation-list__toggle:active {
+    box-shadow: var(--shadow-inset);
+}
+
+/* The arrow turns with transform only, which the GPU handles */
+.citation-list__chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+}
+
+.citation-list__chevron--open {
+    transform: rotate(180deg);
+}
+
+.citation-list__items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Each source is a pressed-in well, so the text inside reads as quoted material */
+.citation-list__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-inset);
+}
+
+.citation-list__heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    color: var(--text);
+}
+
+.citation-list__heading svg {
+    flex-shrink: 0;
+}
+
+.citation-list__filename {
+    overflow: hidden;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.citation-list__meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.citation-list__preview {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+}
