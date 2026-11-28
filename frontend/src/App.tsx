@@ -1,5 +1,9 @@
 import ThemeToggle from "./components/common/ThemeToggle";
 import UploadZone from "./components/documents/UploadZone";
+import DocumentList from "./components/documents/DocumentList";
+import SummaryModal from "./components/documents/SummaryModal";
+
+import { useSummary } from "./hooks/useSummary";
 import { useDocuments } from "./hooks/useDocuments";
 import { useTheme } from "./hooks/useTheme";
 
@@ -8,7 +12,17 @@ import { useTheme } from "./hooks/useTheme";
 export default function App() {
   // Each hook is called once here and its values are passed down
   const { theme, toggleTheme } = useTheme();
-  const { documents, isLoading, loadError, upload } = useDocuments();
+  const { documents, isLoading, loadError, reload, upload, remove } =
+    useDocuments();
+
+  const {
+    summaryTarget,
+    isSummarizing,
+    summaryError,
+    summary,
+    openSummary,
+    closeSummary,
+  } = useSummary();
 
   return (
     <main
@@ -23,15 +37,24 @@ export default function App() {
       <ThemeToggle theme={theme} onToggle={toggleTheme} />
       <h1>DocMind</h1>
       <UploadZone onUpload={upload} />
-      {isLoading && <p>Loading documents...</p>}
-      {loadError !== null && <p role="alert">{loadError}</p>}
-      <ul>
-        {documents.map((document) => (
-          <li key={document.doc_id}>
-            {document.filename} ({document.chunk_count} chunks)
-          </li>
-        ))}
-      </ul>
+      <DocumentList
+        documents={documents}
+        isLoading={isLoading}
+        loadError={loadError}
+        onRetry={reload}
+        onDelete={remove}
+        onSummarize={openSummary}
+      />
+      {/* Mounted only while a summary is open; mounting is what opens the dialog */}
+      {summaryTarget !== null && (
+        <SummaryModal
+          filename={summaryTarget.filename}
+          isLoading={isSummarizing}
+          error={summaryError}
+          summary={summary}
+          onClose={closeSummary}
+        />
+      )}
     </main>
   );
 }

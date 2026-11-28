@@ -1,0 +1,66 @@
+.markdown-text {
+    overflow-wrap: anywhere;
+}
+
+/* No extra gap above the first block or below the last one */
+.markdown-text> :first-child {
+    margin-top: 0;
+}
+
+.markdown-text> :last-child {
+    margin-bottom: 0;
+}
+
+.markdown-text p,
+.markdown-text ul,
+.markdown-text ol {
+    margin: 0 0 var(--space-2);
+}
+
+.markdown-text ul,
+.markdown-text ol {
+    padding-left: var(--space-4);
+}
+
+.markdown-text li {
+    margin-bottom: var(--space-1);
+}
+
+.markdown-text strong {
+    font-weight: 600;
+}
+
+/* Models sometimes answer with headings; keep them modest inside a card */
+.markdown-text h1,
+.markdown-text h2,
+.markdown-text h3 {
+    margin: var(--space-3) 0 var(--space-2);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Inline code: a small pressed-in chip, subtle enough to read at text size */
+.markdown-text code {
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--surface);
+    box-shadow:
+        inset 1px 1px 2px var(--shadow-dark),
+        inset -1px -1px 2px var(--shadow-light);
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.9em;
+}
+
+/* Code blocks scroll sideways instead of stretching the card */
+.markdown-text pre {
+    margin: 0 0 var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    overflow-x: auto;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-inset);
+}
+
+.markdown-text pre code {
+    padding: 0;
+    box-shadow: none;
+}

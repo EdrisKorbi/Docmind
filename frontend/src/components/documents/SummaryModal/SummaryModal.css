@@ -1,0 +1,146 @@
+/* Native <dialog>: the browser centers it and dims the page behind it */
+.summary-modal {
+    width: min(560px, 92vw);
+    max-height: 80vh;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    color: var(--text);
+    /* A plain drop shadow: the neumorphic white highlight looks like a glow
+     on top of the dimmed page */
+    box-shadow: 0 16px 40px rgb(0 0 0 / 0.35);
+}
+
+/* Only when open: setting display on a closed dialog would make it visible */
+.summary-modal[open] {
+    display: flex;
+}
+
+/* Plain color: ::backdrop does not reliably see our theme variables */
+.summary-modal::backdrop {
+    background: rgb(0 0 0 / 0.25);
+    backdrop-filter: blur(2px);
+}
+
+/* The dialog gets focus from code, not from the keyboard, so no ring here.
+   Buttons inside still show theirs when reached with Tab. */
+.summary-modal:focus {
+    outline: none;
+}
+
+/* All padding lives here, so a click on the dialog element itself means "backdrop" */
+.summary-modal__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--space-4);
+}
+
+.summary-modal__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.summary-modal__titles {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.summary-modal__title {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.summary-modal__filename {
+    overflow: hidden;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.summary-modal__close {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--text-muted);
+    box-shadow: var(--shadow-raised-sm);
+    cursor: pointer;
+    transition:
+        box-shadow 0.2s ease,
+        color 0.2s ease;
+}
+
+.summary-modal__close:hover {
+    color: var(--accent);
+}
+
+.summary-modal__close:active {
+    box-shadow: var(--shadow-inset);
+}
+
+/* Long summaries scroll inside the body; the header stays visible */
+.summary-modal__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-height: 0;
+    padding: var(--space-3);
+    overflow-y: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-inset);
+}
+
+
+
+.summary-modal__meta {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.summary-modal__state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4) 0;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.summary-modal__state p {
+    margin: 0;
+}
+
+.summary-modal__state--error {
+    color: var(--danger);
+}
+
+/* Spinner animates transform only, which the GPU handles */
+.summary-modal__spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--text-muted);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: summary-modal-spin 0.8s linear infinite;
+}
+
+@keyframes summary-modal-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

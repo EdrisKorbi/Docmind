@@ -1,0 +1,98 @@
+.document-item {
+    list-style: none;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-raised-sm);
+}
+
+.document-item__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* min-width: 0 lets the flex child shrink so long names can be cut with "..." */
+.document-item__info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.document-item__name {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.document-item__meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.document-item__confirm {
+    display: flex;
+    gap: var(--space-1);
+}
+
+.document-item__actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+/* Shared look for the small raised buttons; pressing makes them look pushed in */
+.document-item__icon-button,
+.document-item__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: var(--surface);
+    color: var(--text-muted);
+    box-shadow: var(--shadow-raised-sm);
+    font: inherit;
+    cursor: pointer;
+    transition:
+        box-shadow 0.2s ease,
+        color 0.2s ease;
+}
+
+.document-item__icon-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.document-item__button {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+}
+
+.document-item__icon-button:hover,
+.document-item__button:hover {
+    color: var(--accent);
+}
+
+.document-item__button--danger,
+.document-item__button--danger:hover {
+    color: var(--danger);
+}
+
+.document-item__icon-button:active,
+.document-item__button:active {
+    box-shadow: var(--shadow-inset);
+}
+
+.document-item__button:disabled {
+    box-shadow: var(--shadow-inset);
+    cursor: progress;
+}
+
+.document-item__error {
+    margin: var(--space-2) 0 0;
+    font-size: 0.85rem;
+    color: var(--danger);
+}
