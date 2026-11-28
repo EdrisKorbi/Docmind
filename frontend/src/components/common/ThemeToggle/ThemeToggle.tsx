@@ -1,5 +1,6 @@
-import type { Theme } from "../hooks/useTheme";
-import { MoonIcon, SunIcon } from "../icons";
+import type { Theme } from "../../../hooks/useTheme";
+import { MoonIcon, SunIcon } from "../../../icons";
+
 import "./ThemeToggle.css";
 
 // The component receives the theme and a click handler from its parent

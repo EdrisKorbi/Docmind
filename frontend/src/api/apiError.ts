@@ -10,3 +10,14 @@ export class ApiError extends Error {
         this.status = status;
     }
 }
+
+// Turns anything thrown by an API call into text that is safe to show the user.
+// `catch` variables are `unknown` in strict TypeScript, so we must check the type.
+export function getErrorMessage(error: unknown): string {
+    // Our own errors already carry a user-ready message from the backend envelope
+    if (error instanceof ApiError) {
+        return error.message;
+    }
+    // Anything else is a bug, so hide the technical text from the user
+    return "Something went wrong. Please try again.";
+}

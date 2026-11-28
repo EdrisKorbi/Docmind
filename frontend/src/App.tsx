@@ -1,26 +1,37 @@
-import ThemeToggle from "./components/ThemeToggle";
+import ThemeToggle from "./components/common/ThemeToggle";
+import UploadZone from "./components/documents/UploadZone";
+import { useDocuments } from "./hooks/useDocuments";
 import { useTheme } from "./hooks/useTheme";
-import { FileIcon, SendIcon, TrashIcon, UploadIcon } from "./icons";
 
-// Temporary Step 2 screen: tests the theme toggle and previews the icons.
+// Temporary Step 4 screen: tests upload and the documents hook.
 // This file is replaced by the real layout in Steps 4-5.
 export default function App() {
-  // Called once here, then passed down, so there is only one theme state
+  // Each hook is called once here and its values are passed down
   const { theme, toggleTheme } = useTheme();
+  const { documents, isLoading, loadError, upload } = useDocuments();
 
   return (
-    <main style={{ padding: "var(--space-4)" }}>
+    <main
+      style={{
+        padding: "var(--space-4)",
+        maxWidth: 420,
+        display: "flex",
+        flexDirection: "column",
+        gap: "var(--space-3)",
+      }}
+    >
       <ThemeToggle theme={theme} onToggle={toggleTheme} />
       <h1>DocMind</h1>
-      <p>Current theme: {theme}</p>
-      <p>API base URL: {import.meta.env.VITE_API_BASE_URL}</p>
-      {/* Icon preview: icons inherit the text color of their parent */}
-      <p style={{ display: "flex", gap: "var(--space-3)" }}>
-        <UploadIcon />
-        <FileIcon />
-        <TrashIcon />
-        <SendIcon />
-      </p>
+      <UploadZone onUpload={upload} />
+      {isLoading && <p>Loading documents...</p>}
+      {loadError !== null && <p role="alert">{loadError}</p>}
+      <ul>
+        {documents.map((document) => (
+          <li key={document.doc_id}>
+            {document.filename} ({document.chunk_count} chunks)
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }

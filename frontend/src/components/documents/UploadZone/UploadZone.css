@@ -1,0 +1,72 @@
+.upload {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+/* The whole zone is one raised button; it looks pushed in while active */
+.upload-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-3);
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-raised-sm);
+    font: inherit;
+    text-align: center;
+    cursor: pointer;
+    transition:
+        box-shadow 0.2s ease,
+        color 0.2s ease;
+}
+
+/* Children never receive drag events, so dragging over the text or icon
+   does not make the highlight flicker on and off */
+.upload-zone>* {
+    pointer-events: none;
+}
+
+.upload-zone:hover {
+    color: var(--accent);
+}
+
+.upload-zone--active,
+.upload-zone:active,
+.upload-zone[aria-disabled="true"] {
+    box-shadow: var(--shadow-inset);
+}
+
+.upload-zone[aria-disabled="true"] {
+    cursor: progress;
+}
+
+.upload-zone__hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Spinner animates transform only, which the GPU handles */
+.upload-zone__spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--text-muted);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: upload-spin 0.8s linear infinite;
+}
+
+@keyframes upload-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.upload__error {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--danger);
+}
