@@ -69,7 +69,9 @@ def format_context(chunks: list[Document]) -> str:
         filename = chunk.metadata.get("filename", "unknown")
         page = chunk.metadata.get("page", 0)
         page_label = f"page {page}" if page > 0 else "text file"
-        blocks.append(f"[{idx}] Source: {filename} ({page_label})\n{chunk.page_content}")
+        blocks.append(
+            f"[{idx}] Source: {filename} ({page_label})\n{chunk.page_content}"
+        )
     return "\n\n---\n\n".join(blocks)
 
 
@@ -95,12 +97,14 @@ def build_citations(chunks: list[Document], preview_chars: int = 200) -> list[di
         )
     return citations
 
+
 REWRITE_SYSTEM_PROMPT = (
     "Given the chat history and a follow-up user question, rewrite the follow-up "
     "into a clear, standalone search query. Resolve pronouns (it, its, they, that, etc.) "
     "using the chat history. Return ONLY the rewritten question, with no explanation "
     "or extra text. If the question is already standalone, return it unchanged."
 )
+
 
 def _rewrite_question(question: str, history: list[dict[str, str]]) -> str:
     """Rewrite a follow-up question into a standalone query using recent chat history."""
@@ -120,6 +124,7 @@ def _rewrite_question(question: str, history: list[dict[str, str]]) -> str:
     rewritten = _invoke_llm(messages, temperature=0.0)
     return rewritten or question
 
+
 def ask_question(
     question: str,
     top_k: int = DEFAULT_TOP_K,
@@ -133,9 +138,7 @@ def ask_question(
     if not cleaned_question:
         raise ValueError("Question cannot be empty.")
 
-    target_doc = (
-        document_service.get_document(doc_id) if doc_id is not None else None
-    )
+    target_doc = document_service.get_document(doc_id) if doc_id is not None else None
 
     # 1. Rewrite follow-up questions using prior session turns (0 calls if history is empty)
     history = session_store.get_history(session_id) if session_id else []
@@ -223,6 +226,7 @@ def ask_question(
         "answer": answer,
         "citations": citations,
     }
+
 
 MAX_SUMMARY_CHUNKS = 20
 

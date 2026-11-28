@@ -16,6 +16,7 @@ logger = logging.getLogger("docmind")
 # Group all backend endpoints under /api and label them cleanly in Swagger UI (/docs)
 router = APIRouter(prefix="/api", tags=["DocMind API"])
 
+
 @router.post(
     "/documents/upload",
     status_code=201,
@@ -60,6 +61,7 @@ def ask_question(payload: AskRequest) -> ApiResponse[AskData]:
         message="Answer generated successfully.",
     )
 
+
 @router.get("/documents", response_model=ApiResponse[list[DocumentRecord]])
 def list_documents() -> ApiResponse[list[DocumentRecord]]:
     """Return all uploaded documents with their chunk counts and timestamps."""
@@ -82,6 +84,7 @@ def delete_document(doc_id: str) -> ApiResponse[DocumentRecord]:
         message=f"Deleted '{deleted['filename']}' and its {deleted['chunk_count']} chunk(s).",
     )
 
+
 @router.delete("/sessions/{session_id}", response_model=ApiResponse[dict])
 def clear_chat_session(session_id: str) -> ApiResponse[dict]:
     """Clear in-memory conversation history for a chat session."""
@@ -91,6 +94,7 @@ def clear_chat_session(session_id: str) -> ApiResponse[dict]:
         data={"session_id": session_id, "cleared": existed},
         message="Chat history cleared." if existed else "Session was already empty.",
     )
+
 
 @router.post("/documents/{doc_id}/summarize", response_model=ApiResponse[SummaryData])
 def summarize_document(doc_id: str) -> ApiResponse[SummaryData]:
